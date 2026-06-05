@@ -5,7 +5,7 @@
 Upload any Kenya government document — land title, tax notice, court summons, employment contract — and get a plain Swahili explanation of what it means, what you need to do, and what your rights are.
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://hatiai.streamlit.app)
-[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## The Problem
 

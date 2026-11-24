@@ -1,4 +1,6 @@
 import streamlit as st
+import html
+import os
 import urllib.request
 import json
 import base64
@@ -18,7 +20,16 @@ st.markdown("""<style>
 }
 </style>""", unsafe_allow_html=True)
 
-API_KEY = st.secrets.get("GOOGLE_API_KEY") or st.secrets.get("GEMINI_API_KEY", "")
+def _secret(name):
+    """Read a Streamlit secret, falling back to the environment; never crash when no secrets file exists."""
+    try:
+        v = st.secrets.get(name)
+    except Exception:
+        v = None
+    return v or os.environ.get(name, "")
+
+API_KEY = _secret("GOOGLE_API_KEY") or _secret("GEMINI_API_KEY")
+MODEL = _secret("GEMINI_MODEL") or "gemini-3.5-flash-lite"  # the 1.5 Flash model this app used was retired by Google
 
 def explain_document(file_bytes: bytes, mime_type: str, question: str = "") -> str:
     if not API_KEY:
@@ -45,16 +56,16 @@ def explain_document(file_bytes: bytes, mime_type: str, question: str = "") -> s
         )}]},
         "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1000}
     }
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
     try:
         req = urllib.request.Request(
             url, data=json.dumps(body).encode(),
-            headers={"Content-Type": "application/json"}, method="POST")
+            headers={"Content-Type": "application/json", "x-goog-api-key": API_KEY}, method="POST")
         with urllib.request.urlopen(req, timeout=45) as r:
             d = json.loads(r.read())
-            return d["candidates"][0]["content"]["parts"][0]["text"]
+            return html.escape(d["candidates"][0]["content"]["parts"][0]["text"])
     except Exception as e:
-        return f"❌ Hitilafu: {e}"
+        return html.escape(f"❌ Hitilafu: {e}")
 
 st.markdown("# 📄 Hati AI")
 st.markdown("**Eleza Hati yako kwa Kiswahili**")
